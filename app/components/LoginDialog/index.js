@@ -11,6 +11,8 @@ export default class LoginDialog extends React.Component {
   state = {
     open: false,
     loggedIn: !!this._getCookie('sessionid'),
+    sessionId: '',
+    csrf: '',
   };
 
   _getCookie(name) {
@@ -20,7 +22,7 @@ export default class LoginDialog extends React.Component {
   }
 
   open = () => {
-    this.setState({ open: true });
+    this.setState({ open: true, sessionId: '', csrf: '' });
   };
 
   close = () => {
@@ -28,7 +30,19 @@ export default class LoginDialog extends React.Component {
   };
 
   login = () => {
-    this.setState({ open: true });
+    document.cookie = `sessionid=${this.state.sessionId};`;
+    document.cookie = `csrftoken=${this.state.csrf};`;
+    this.setState({loggedIn: !!this._getCookie('sessionid')});
+    this.close();
+  }
+
+  setSessionId = (e) => {
+    console.log(e.target.value);
+    this.setState({sessionId: e.target.value});
+  }
+
+  setCSRFToken = (e) => {
+    this.setState({csrf: e.target.value});
   }
 
   logout = () => {
@@ -39,34 +53,38 @@ export default class LoginDialog extends React.Component {
   render() {
     return (
       <div>
-        {!this.state.loggedIn ? <Button color="inherit" onClick={this.login}>Login</Button> : <Button color="inherit" onClick={this.logout}>Logout</Button> }
+        {!this.state.loggedIn ? <Button color="inherit" onClick={this.open}>Login</Button> : <Button color="inherit" onClick={this.logout}>Logout</Button> }
         <Dialog
           open={this.state.open}
-          onClose={this.handleClose}
+          onClose={this.close}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+          <DialogTitle id="form-dialog-title">Login</DialogTitle>
           <DialogContent>
             <DialogContentText>
-        To subscribe to this website, please enter your email address here. We will send
-      updates occasionally.
+        Copy your Tokens from Bodega here:
       </DialogContentText>
             <TextField
               autoFocus
               margin="dense"
-              id="name"
-              label="Email Address"
-              type="email"
+              id="sessionId"
+              label="Session Id"
+              type="text"
+              onChange={this.setSessionId}
+              fullWidth
+            />
+            <TextField
+              margin="dense"
+              id="CSRFToken"
+              label="Optional CSRF Token"
+              type="text"
+              onChange={this.setCSRFToken}
               fullWidth
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-      Cancel
-      </Button>
-            <Button onClick={this.handleClose} color="primary">
-      Subscribe
-      </Button>
+            <Button onClick={this.close} color="secondary">Cancel</Button>
+            <Button onClick={this.login} color="primary">Login</Button>
           </DialogActions>
         </Dialog>
       </div>
