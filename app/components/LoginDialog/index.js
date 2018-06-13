@@ -32,21 +32,22 @@ export default class LoginDialog extends React.Component {
   login = () => {
     document.cookie = `sessionid=${this.state.sessionId};`;
     document.cookie = `csrftoken=${this.state.csrf};`;
-    this.setState({loggedIn: !!this._getCookie('sessionid')});
+    this.setState({ loggedIn: !!this._getCookie('sessionid') });
     this.close();
   }
 
   setSessionId = (e) => {
     console.log(e.target.value);
-    this.setState({sessionId: e.target.value});
+    this.setState({ sessionId: e.target.value });
   }
 
   setCSRFToken = (e) => {
-    this.setState({csrf: e.target.value});
+    this.setState({ csrf: e.target.value });
   }
 
   logout = () => {
     document.cookie = 'sessionid=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     this.setState({ loggedIn: !!this._getCookie('sessionid') });
   }
 
